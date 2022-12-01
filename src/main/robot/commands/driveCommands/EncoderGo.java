@@ -14,52 +14,58 @@ import frc.robot.subsystems.DriveBase;;
  * <p>
  * This class drives to the point by encoders
  */
-public class EncoderGo extends CommandBase
-{
-    private double targx;
-    //Grab the subsystem instance from RobotContainer
+public class EncoderGo extends CommandBase {
+    private double targ;
+    private boolean straight;
+    // Grab the subsystem instance from RobotContainer
     private static final DriveBase driveBase = RobotContainer.driveBase;
     private boolean finished = false;
-    private double xSpeed, ySpeed;
 
     /**
      * Constructor
      */
-    public EncoderGo(double targx, double targy)
-    {
+    public EncoderGo(double targ, boolean straight) {
         addRequirements(driveBase); // Adds the subsystem to the command
-        double maxTarg = Math.max(targx, targy);
-        xSpeed = targx / maxTarg;
-        ySpeed = targy / maxTarg;
-        this.targx = targx + driveBase.getBackEncoderDistance();
-        // this.targy = targy + driveBase.getLeftEncoderDistance();
+        if (straight)
+            this.targ = targ / Math.cos(Math.PI / 3) + driveBase.getRightEncoderDistance();
+        else
+            this.targ = targ + driveBase.getBackEncoderDistance();
+        this.straight = straight;
     }
 
     /**
      * Runs before execute
      */
     @Override
-    public void initialize()
-    {
-        while((driveBase.getBackEncoderDistance() != 0) && (driveBase.getRightEncoderDistance() != 0) && (driveBase.getLeftEncoderDistance() != 0)){
-            driveBase.resetEncoder();
-        }
+    public void initialize() {
+
     }
 
     /**
      * Called continously until command is ended
      */
     @Override
-    public void execute()
-    {
-        driveBase.setMovement(xSpeed, ySpeed);
-        if (driveBase.getBackEncoderDistance() < targx)
-        {
-            while (driveBase.getBackEncoderDistance() < targx) {}
-        }
-        else
-        {
-            while (driveBase.getBackEncoderDistance() < targx) {}
+    public void execute() {
+        if (!straight) {
+            if (driveBase.getBackEncoderDistance() < targ) {
+                driveBase.setMovement(0.5, 0);
+                while (driveBase.getBackEncoderDistance() < targ) {
+                }
+            } else {
+                driveBase.setMovement(-0.5, 0);
+                while (driveBase.getBackEncoderDistance() > targ) {
+                }
+            }
+        } else {
+            if (driveBase.getLeftEncoderDistance() < targ) {
+                driveBase.setMovement(0, 0.5);
+                while (driveBase.getRightEncoderDistance() < targ) {
+                }
+            } else {
+                driveBase.setMovement(0, -0.5);
+                while (driveBase.getRightEncoderDistance() > targ) {
+                }
+            }
         }
         driveBase.setDriverMotorSpeed(0.0, 0.0, 0.0);
         finished = true;
@@ -69,8 +75,7 @@ public class EncoderGo extends CommandBase
      * Called when the command is told to end or is interrupted
      */
     @Override
-    public void end(boolean interrupted)
-    {
+    public void end(boolean interrupted) {
         driveBase.setDriverMotorSpeed(0.0, 0.0, 0.0); // Stop motor
     }
 
@@ -78,8 +83,7 @@ public class EncoderGo extends CommandBase
      * Creates an isFinished condition if needed
      */
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return finished;
     }
 }
