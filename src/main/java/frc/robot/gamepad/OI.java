@@ -24,7 +24,7 @@ public class OI
         public double getRightDriveY()
         {
             double joy = drivePad.getRawAxis(GamepadConstants.RIGHT_ANALOG_Y);
-            if(Math.abs(joy) < 0.05)
+            if(Math.abs(joy) < 0.1)
                 return 0.0;
             else  
                 return joy;
@@ -36,7 +36,7 @@ public class OI
         public double getRightDriveX()
         {
             double joy = drivePad.getRawAxis(GamepadConstants.RIGHT_ANALOG_X);
-            if(Math.abs(joy) < 0.05)
+            if(Math.abs(joy) < 0.1)
                 return 0.0;
             else
                 return joy;
@@ -48,7 +48,7 @@ public class OI
         public double getLeftDriveY()
         {
             double joy = drivePad.getRawAxis(GamepadConstants.LEFT_ANALOG_Y);
-            if(Math.abs(joy) < 0.12)
+            if(Math.abs(joy) < 0.1)
                 return 0.0;
             else  
                 return joy;

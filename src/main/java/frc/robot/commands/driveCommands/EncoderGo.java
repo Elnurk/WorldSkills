@@ -28,7 +28,7 @@ public class EncoderGo extends CommandBase
     {
         addRequirements(driveBase); // Adds the subsystem to the command
         this.targx = targx + driveBase.getBackEncoderDistance();
-        this.targy = targy + driveBase.getLeftEncoderDistance() / Math.cos(0.524);
+        this.targy = targy + driveBase.getLeftEncoderDistance();
     }
 
     /**
@@ -46,27 +46,18 @@ public class EncoderGo extends CommandBase
     @Override
     public void execute()
     {
-        if (targx < driveBase.getBackEncoderDistance())
+        double maxTarg = Math.max(targx, targy);
+        double xSpeed, ySpeed;
+        xSpeed = targx / maxTarg;
+        ySpeed = targy / maxTarg;
+        driveBase.setMovement(xSpeed, ySpeed);
+        if (driveBase.getBackEncoderDistance() < targx)
         {
-            // maybe 0.433 instead of 0.5
-            driveBase.setDriverMotorSpeed(0.5, 0.5, -1.0);
-            while (targx < driveBase.getBackEncoderDistance()) {}
+            while (driveBase.getBackEncoderDistance() < targx) {}
         }
         else
         {
-            driveBase.setDriverMotorSpeed(-0.5, -0.5, 1.0);
-            while (targx > driveBase.getBackEncoderDistance()) {}
-        }
-        driveBase.setDriverMotorSpeed(0.0, 0.0, 0.0);
-        if (targy < driveBase.getLeftEncoderDistance())
-        {
-            driveBase.setDriverMotorSpeed(-1.0, 1.0, 0.0);
-            while (targy < driveBase.getLeftEncoderDistance()) {}
-        }
-        else
-        {
-            driveBase.setDriverMotorSpeed(1.0, -1.0, 0.0);
-            while (targy > driveBase.getLeftEncoderDistance()) {}
+            while (driveBase.getBackEncoderDistance() < targx) {}
         }
         driveBase.setDriverMotorSpeed(0.0, 0.0, 0.0);
         finished = true;

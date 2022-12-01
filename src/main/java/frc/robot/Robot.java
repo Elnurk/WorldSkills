@@ -21,23 +21,29 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
   }
 
+  static Thread visionThread;
+
   @Override
   public void disabledInit() {
-    new Thread(()->{
+    visionThread = new Thread(() -> {
       UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
       camera.setResolution(640, 480);
       camera.setFPS(30);
@@ -48,20 +54,20 @@ public class Robot extends TimedRobot {
       Mat source = new Mat();
       Mat output = new Mat();
 
-      while(!Thread.interrupted()){
-        if(cvSink.grabFrame(source) == 0)
+      while (!Thread.interrupted()) {
+        if (cvSink.grabFrame(source) == 0)
           continue;
         Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
         outputStream.putFrame(output);
       }
-    }).start();
+    });
+    visionThread.start();
 
-    //Check to see if autoChooser has been created
-    if(null == RobotContainer.autoChooser)
-    {
+    // Check to see if autoChooser has been created
+    if (null == RobotContainer.autoChooser) {
       RobotContainer.autoChooser = new SendableChooser<>();
     }
-    //Add the default auto to the auto chooser
+    // Add the default auto to the auto chooser
     RobotContainer.autoChooser.setDefaultOption("Drive Motor", "Drive Motor");
     RobotContainer.autoMode.put("Drive Motor", new DriveMotor());
     SmartDashboard.putData(RobotContainer.autoChooser);

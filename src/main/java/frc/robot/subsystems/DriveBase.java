@@ -47,6 +47,38 @@ public class DriveBase extends SubsystemBase {
         backMotor.set(backSpeed);
     }
 
+    public void setMovement(double x, double y)
+    {
+        double lSpeed, rSpeed, bSpeed;
+        lSpeed = -y / Math.cos(Math.PI / 3.0);
+        rSpeed = y / Math.cos(Math.PI / 3.0);
+        bSpeed = x;
+        lSpeed += -0.5 * x;
+        rSpeed += -0.5 * x;
+        double maxSpeed = Math.max(Math.abs(bSpeed), Math.max(Math.abs(lSpeed), Math.abs(rSpeed)));
+        if (maxSpeed > 1.0)
+        {
+            lSpeed /= maxSpeed;
+            rSpeed /= maxSpeed;
+            bSpeed /= maxSpeed;
+        }
+        setDriverMotorSpeed(lSpeed, rSpeed, bSpeed);
+    }
+
+    public void setRotation(rotationDirection dir)
+    {
+        if (dir == rotationDirection.CLOCKWISE)
+            setDriverMotorSpeed(1.0, 1.0, 1.0);
+        else
+           setDriverMotorSpeed(-1.0, -1.0, -1.0);
+    }
+
+    enum rotationDirection
+    {
+        CLOCKWISE,
+        COUNTERCLOCKWISE
+    }
+
     //Distance traveled in mm
     public double getLeftEncoderDistance(){
         return leftEncoder.getEncoderDistance();

@@ -7,15 +7,15 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 //Subsystem imports
-import frc.robot.subsystems.DriveBase;;
+import frc.robot.subsystems.DriveBase;
+import frc.robot.subsystems.DriveBase.rotationDirection;;
 
 /**
  * SimpleDrive class
  * <p>
  * This class drives a motor at 50% speed until the command is ended
  */
-public class EncoderSpin extends CommandBase
-{
+public class EncoderSpin extends CommandBase {
     private static final DriveBase driveBase = RobotContainer.driveBase;
     private boolean finished = false;
     private double targ;
@@ -23,19 +23,17 @@ public class EncoderSpin extends CommandBase
     /**
      * Constructor
      */
-    public EncoderSpin(double degs)
-    {
+    public EncoderSpin(double degs) {
         addRequirements(driveBase); // Adds the subsystem to the command
         double rads = degs / 180 * Math.PI;
-        targ = driveBase.getLeftEncoderDistance() + Constants.robotDiameter * rads;
+        targ = driveBase.getLeftEncoderDistance() + Constants.robotRadius * rads;
     }
 
     /**
      * Runs before execute
      */
     @Override
-    public void initialize()
-    {
+    public void initialize() {
 
     }
 
@@ -43,17 +41,15 @@ public class EncoderSpin extends CommandBase
      * Called continously until command is ended
      */
     @Override
-    public void execute()
-    {
-        if (targ < driveBase.getLeftEncoderDistance())
-        {
-            driveBase.setDriverMotorSpeed(-1.0, -1.0, -1.0);
-            while (targ < driveBase.getLeftEncoderDistance()) {}
-        }
-        else
-        {
-            driveBase.setDriverMotorSpeed(1.0, 1.0, 1.0);
-            while (targ < driveBase.getLeftEncoderDistance()) {}
+    public void execute() {
+        if (targ < driveBase.getLeftEncoderDistance()) {
+            driveBase.setRotation(rotationDirection.COUNTERCLOCKWISE);
+            while (targ < driveBase.getLeftEncoderDistance()) {
+            }
+        } else {
+            driveBase.setRotation(rotationDirection.CLOCKWISE);
+            while (targ > driveBase.getLeftEncoderDistance()) {
+            }
         }
         driveBase.setDriverMotorSpeed(0.0, 0.0, 0.0);
         finished = true;
@@ -63,8 +59,7 @@ public class EncoderSpin extends CommandBase
      * Called when the command is told to end or is interrupted
      */
     @Override
-    public void end(boolean interrupted)
-    {
+    public void end(boolean interrupted) {
         driveBase.setDriverMotorSpeed(0.0, 0.0, 0.0); // Stop motor
     }
 
@@ -72,8 +67,7 @@ public class EncoderSpin extends CommandBase
      * Creates an isFinished condition if needed
      */
     @Override
-    public boolean isFinished()
-    {
+    public boolean isFinished() {
         return finished;
     }
 
